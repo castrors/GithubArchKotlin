@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.squareup.picasso.Picasso
 import io.github.castrors.githubarchkotlin.R
 import io.github.castrors.githubarchkotlin.data.database.Repo
 import kotlinx.android.synthetic.main.repo_list_item.view.*
@@ -42,14 +43,17 @@ class RepoListAdapter(newRepoList: List<Repo>,
 
         fun bindView(repo: Repo) {
             val name = itemView.name
-            val description = itemView.description
+            val description = itemView.fullDescription
             val forksCount = itemView.forkCount
             val starCount = itemView.starCount
+            val image = itemView.image
 
             name.text = repo.full_name
             description.text = repo.description
             forksCount.text = repo.forks_count.toString()
             starCount.text = repo.stargazers_count.toString()
+
+            Picasso.with(itemView.context).load(repo.owner.avatar_url).into(image)
         }
     }
 }

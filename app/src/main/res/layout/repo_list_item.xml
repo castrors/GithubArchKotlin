@@ -3,6 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:padding="8dp"
     android:layout_height="wrap_content">
 
     <TextView
@@ -12,53 +13,58 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        card_view:layout_constraintBottom_toTopOf="@+id/description"
+        card_view:layout_constraintBottom_toTopOf="@+id/fullDescription"
+        card_view:layout_constraintEnd_toStartOf="@+id/image"
         card_view:layout_constraintStart_toStartOf="parent"
         card_view:layout_constraintTop_toTopOf="parent"
         card_view:layout_constraintVertical_chainStyle="packed"
         tools:text="Nome Repositorio" />
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/fullDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        card_view:layout_constraintBottom_toTopOf="@+id/view"
         card_view:layout_constraintEnd_toEndOf="@+id/name"
         card_view:layout_constraintStart_toStartOf="@+id/name"
         card_view:layout_constraintTop_toBottomOf="@+id/name"
         tools:text="Descricao do repositorio loren ipsun dolor sit amet" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/colorAccent"
-        card_view:layout_constraintBottom_toTopOf="@+id/forkCount"
-        card_view:layout_constraintEnd_toEndOf="parent"
-        card_view:layout_constraintHorizontal_bias="0.5"
-        card_view:layout_constraintTop_toBottomOf="@+id/description" />
-
-    <Button
+    <TextView
         android:id="@+id/forkCount"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="0"
-        card_view:layout_constraintBottom_toBottomOf="parent"
-        card_view:layout_constraintEnd_toStartOf="@+id/starCount"
-        card_view:layout_constraintTop_toBottomOf="@+id/view" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:drawablePadding="8dp"
+        android:padding="4dp"
+        android:drawableStart="@drawable/ic_fork_24dp"
+        card_view:layout_constraintStart_toStartOf="parent"
+        card_view:layout_constraintTop_toBottomOf="@+id/fullDescription"
+        tools:text="560" />
 
-    <Button
+    <TextView
         android:id="@+id/starCount"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="0"
-        card_view:layout_constraintEnd_toEndOf="parent"
-        card_view:layout_constraintTop_toTopOf="@+id/forkCount" />
+        android:layout_marginStart="16dp"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_star_24dp"
+        android:gravity="center"
+        card_view:layout_constraintStart_toEndOf="@+id/forkCount"
+        card_view:layout_constraintTop_toTopOf="@+id/forkCount"
+        tools:text="98" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        card_view:layout_constraintBottom_toBottomOf="parent"
+        card_view:layout_constraintRight_toRightOf="parent"
+        card_view:layout_constraintTop_toTopOf="parent"
+        card_view:srcCompat="@mipmap/ic_launcher" />
 
 </android.support.constraint.ConstraintLayout>

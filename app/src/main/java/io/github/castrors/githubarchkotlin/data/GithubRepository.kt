@@ -12,10 +12,13 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
                                            private val executors: AppExecutors) {
     private var initialized = false
 
+    public var userReachedEndOfList = false
+    public var currentPage = 1
+
     private val isFetchNeeded: Boolean
         get() {
             val count = repoDao.countAllRepo()
-            return count == 0
+            return count == 0 || userReachedEndOfList
         }
 
     val githubRepositoriesList: LiveData<List<Repo>>
@@ -85,6 +88,11 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
             }
             return sInstance!!
         }
+    }
+
+    fun requestMore() {
+        userReachedEndOfList = true
+        startFetchReposService()
     }
 
 }

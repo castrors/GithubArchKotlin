@@ -8,15 +8,19 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import io.github.castrors.githubarchkotlin.R
 import io.github.castrors.githubarchkotlin.data.database.Repo
+import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
 import kotlinx.android.synthetic.main.repo_list_item.view.*
 
 class RepoListAdapter(newRepoList: List<Repo>,
                       private val context: Context,
                       private val itemListener: RepoListAdapterOnItemClickHandler) : RecyclerView.Adapter<RepoListAdapter.ViewHolder>() {
 
+    private val repository = InjectorUtils.provideRepository(context)
+
     var repoList: List<Repo> = newRepoList
         set(repoList) {
             field = repoList
+            repository.userReachedEndOfList = false
             notifyDataSetChanged()
         }
 
@@ -27,8 +31,12 @@ class RepoListAdapter(newRepoList: List<Repo>,
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val expense = repoList[position]
         holder?.bindView(expense)
-
+        if (reachedLastPosition(position)) {
+            repository.requestMore()
+        }
     }
+
+    private fun reachedLastPosition(position: Int) = repoList.size - 1 == position
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.repo_list_item, parent, false)

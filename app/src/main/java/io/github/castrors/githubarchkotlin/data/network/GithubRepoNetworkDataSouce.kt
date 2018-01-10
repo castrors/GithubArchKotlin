@@ -8,10 +8,12 @@ import android.util.Log
 import com.firebase.jobdispatcher.*
 import io.github.castrors.githubarchkotlin.AppExecutors
 import io.github.castrors.githubarchkotlin.data.database.Repo
+import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
 import java.util.concurrent.TimeUnit
 
 class GithubRepoNetworkDataSource constructor(private val mContext: Context, private val mExecutors: AppExecutors) {
 
+    val EMPTY_RESPONSE_MESSAGE = "Only the first 1000 search results are available"
     private val downloadedGithubRepositories: MutableLiveData<List<Repo>>
 
     val currentGithubRepositories: LiveData<List<Repo>>
@@ -86,15 +88,23 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
      * Gets the newest weather
      */
     internal fun fetchRepos() {
-        Log.d(LOG_TAG, "Fetch weather started")
+
         mExecutors.networkIO().execute({
             try {
-                val githubRepositories = RestApi().getGithubRepositories()
+                val repository = InjectorUtils.provideRepository(mContext)
+                Log.d(LOG_TAG, "Fetch started, page ${repository.currentPage}")
+                val githubRepositories = RestApi().getGithubRepositories(repository.currentPage)
                 val response = githubRepositories.execute()
 
                 if (response.isSuccessful) {
-                    val githubRepos = response.body()?.repos
-                    downloadedGithubRepositories.postValue(githubRepos)
+                    val body = response.body()
+                    if (body?.message == null) {
+                        val githubRepos = body?.repos
+                        downloadedGithubRepositories.postValue(githubRepos)
+                        repository.currentPage++
+                    } else {
+                        repository.currentPage = -1
+                    }
                 }
             } catch (e: Exception) {
                 // Server probably invalid

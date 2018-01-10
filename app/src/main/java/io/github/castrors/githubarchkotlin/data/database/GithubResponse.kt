@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 data class GithubBase(
         val total_count: Int,
         val incomplete_results: Boolean,
+        val message: String,
         @SerializedName("items") val repos: List<Repo>)
 
 @Entity(tableName = "repo")
@@ -17,7 +18,7 @@ data class Repo(
         val name: String,
         val full_name: String,
         @Embedded val owner: Owner,
-        val description: String,
+        val description: String? = "",
         val stargazers_count: Int,
         val forks_count: Int)
 

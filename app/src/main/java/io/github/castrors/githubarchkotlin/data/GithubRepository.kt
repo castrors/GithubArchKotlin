@@ -1,19 +1,26 @@
 package io.github.castrors.githubarchkotlin.data
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import io.github.castrors.githubarchkotlin.AppExecutors
+import io.github.castrors.githubarchkotlin.data.database.PullRequest
 import io.github.castrors.githubarchkotlin.data.database.Repo
 import io.github.castrors.githubarchkotlin.data.network.GithubRepoNetworkDataSource
+import io.github.castrors.githubarchkotlin.data.network.PullRequestDao
 import io.github.castrors.githubarchkotlin.data.network.RepoDao
 
 class GithubRepository private constructor(private val repoDao: RepoDao,
+                                           private val pullRequestDao: PullRequestDao,
                                            private val githubNetworkDataSource: GithubRepoNetworkDataSource,
                                            private val executors: AppExecutors) {
     private var initialized = false
 
     public var userReachedEndOfList = false
     public var currentPage = 1
+
+    lateinit var owner: String
+    lateinit var repo: String
 
     private val isFetchNeeded: Boolean
         get() {
@@ -26,6 +33,8 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
             initializeData()
             return repoDao.getRepos()
         }
+
+    lateinit var pullRequestsList: MutableLiveData<List<PullRequest>>
 
     init {
 
@@ -76,12 +85,12 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
 
         @Synchronized
         fun getInstance(
-                weatherDao: RepoDao, githubRepoNetworkDataSource: GithubRepoNetworkDataSource,
+                repoDao: RepoDao, pullRequestDao: PullRequestDao, githubRepoNetworkDataSource: GithubRepoNetworkDataSource,
                 executors: AppExecutors): GithubRepository {
             Log.d(LOG_TAG, "Getting the repository")
             if (sInstance == null) {
                 synchronized(LOCK) {
-                    sInstance = GithubRepository(weatherDao, githubRepoNetworkDataSource,
+                    sInstance = GithubRepository(repoDao, pullRequestDao, githubRepoNetworkDataSource,
                             executors)
                     Log.d(LOG_TAG, "Made new repository")
                 }
@@ -93,6 +102,16 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
     fun requestMore() {
         userReachedEndOfList = true
         startFetchReposService()
+    }
+
+    fun getPullRequestsList(repo: String, owner: String): LiveData<List<PullRequest>> {
+        startFetchPullRequestService()
+        return pullRequestDao.getPullRequestsByRepoAndOwner(repo, owner)
+
+    }
+
+    private fun startFetchPullRequestService() {
+        githubNetworkDataSource.startFetchPullRequestService()
     }
 
 }

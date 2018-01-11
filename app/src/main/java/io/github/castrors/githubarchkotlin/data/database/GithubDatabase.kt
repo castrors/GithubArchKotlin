@@ -4,12 +4,14 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
+import io.github.castrors.githubarchkotlin.data.network.PullRequestDao
 import io.github.castrors.githubarchkotlin.data.network.RepoDao
 
 @Database(entities = arrayOf(Repo::class), version = 1, exportSchema = false)
 abstract class GithubDatabase : RoomDatabase() {
 
     abstract fun repoDao(): RepoDao
+    abstract fun pullRequestDao(): PullRequestDao
 
     companion object {
 

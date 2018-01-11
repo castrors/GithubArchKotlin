@@ -7,6 +7,7 @@ import android.content.Intent
 import android.util.Log
 import com.firebase.jobdispatcher.*
 import io.github.castrors.githubarchkotlin.AppExecutors
+import io.github.castrors.githubarchkotlin.data.database.PullRequest
 import io.github.castrors.githubarchkotlin.data.database.Repo
 import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
 import java.util.concurrent.TimeUnit
@@ -15,13 +16,19 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
 
     val EMPTY_RESPONSE_MESSAGE = "Only the first 1000 search results are available"
     private val downloadedGithubRepositories: MutableLiveData<List<Repo>>
+    private val downloadedPullRequests: MutableLiveData<List<PullRequest>>
 
     val currentGithubRepositories: LiveData<List<Repo>>
         get() = downloadedGithubRepositories
 
+    val currentPullRequests: LiveData<List<PullRequest>>
+        get() = downloadedPullRequests
+
     init {
         downloadedGithubRepositories = MutableLiveData<List<Repo>>()
+        downloadedPullRequests = MutableLiveData<List<PullRequest>>()
     }
+
 
     /**
      * Starts an intent service to fetch the weather.
@@ -30,6 +37,10 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
         val intentToFetch = Intent(mContext, GithubSyncIntentService::class.java)
         mContext.startService(intentToFetch)
         Log.d(LOG_TAG, "Service created")
+    }
+
+    fun startFetchPullRequestService() {
+        val intentToFetch = Intent(mContext, PullRequestIntentService::class.java)
     }
 
     /**
@@ -105,6 +116,25 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
                     } else {
                         repository.currentPage = -1
                     }
+                }
+            } catch (e: Exception) {
+                // Server probably invalid
+                e.printStackTrace()
+            }
+        })
+    }
+
+    fun fetchPullRequests() {
+        mExecutors.networkIO().execute({
+            try {
+                val repository = InjectorUtils.provideRepository(mContext)
+                Log.d(LOG_TAG, "Fetch pull request")
+
+                val pullRequests = RestApi().getPullRequests(repository.owner, repository.repo)
+                val response = pullRequests.execute()
+
+                if (response.isSuccessful) {
+                    downloadedPullRequests.postValue(response.body())
                 }
             } catch (e: Exception) {
                 // Server probably invalid

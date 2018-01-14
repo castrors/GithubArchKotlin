@@ -32,6 +32,7 @@ dependencies {
 
     implementation "android.arch.lifecycle:runtime:$lifecycle_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     kapt "android.arch.lifecycle:compiler:$arch_version"
 
     implementation "android.arch.persistence.room:runtime:$arch_version"

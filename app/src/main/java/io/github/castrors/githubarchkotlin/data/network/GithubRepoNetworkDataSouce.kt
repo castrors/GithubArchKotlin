@@ -41,6 +41,8 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
 
     fun startFetchPullRequestService() {
         val intentToFetch = Intent(mContext, PullRequestIntentService::class.java)
+        mContext.startService(intentToFetch)
+        Log.d(LOG_TAG, "Service created")
     }
 
     /**
@@ -134,7 +136,12 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
                 val response = pullRequests.execute()
 
                 if (response.isSuccessful) {
-                    downloadedPullRequests.postValue(response.body())
+                    val pullRequestsList: MutableList<PullRequest> = response.body() as MutableList<PullRequest>
+                    pullRequestsList.map {
+                        it.owner = repository.owner
+                        it.repo = repository.repo
+                    }
+                    downloadedPullRequests.postValue(pullRequestsList)
                 }
             } catch (e: Exception) {
                 // Server probably invalid

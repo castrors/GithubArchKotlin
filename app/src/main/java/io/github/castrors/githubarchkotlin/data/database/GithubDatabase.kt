@@ -7,7 +7,7 @@ import android.content.Context
 import io.github.castrors.githubarchkotlin.data.network.PullRequestDao
 import io.github.castrors.githubarchkotlin.data.network.RepoDao
 
-@Database(entities = arrayOf(Repo::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(Repo::class, PullRequest::class), version = 1, exportSchema = false)
 abstract class GithubDatabase : RoomDatabase() {
 
     abstract fun repoDao(): RepoDao

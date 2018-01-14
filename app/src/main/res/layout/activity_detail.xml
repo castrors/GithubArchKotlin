@@ -15,19 +15,19 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/no_expense_found"
+                android:id="@+id/noPullRequestFound"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:visibility="gone"
-                tools:text="Não exitem despesas registradas" />
+                tools:text="Não foram encontrados nenhum pull request para esse repositorio" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/repoList"
+                android:id="@+id/pullRequestList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="@string/linear_layout_manager"
-                tools:listitem="@layout/repo_list_item" />
+                tools:listitem="@layout/pull_request_list_item" />
 
         </LinearLayout>
 

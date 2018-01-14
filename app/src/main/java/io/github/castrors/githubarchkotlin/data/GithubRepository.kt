@@ -1,7 +1,6 @@
 package io.github.castrors.githubarchkotlin.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import io.github.castrors.githubarchkotlin.AppExecutors
 import io.github.castrors.githubarchkotlin.data.database.PullRequest
@@ -34,7 +33,11 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
             return repoDao.getRepos()
         }
 
-    lateinit var pullRequestsList: MutableLiveData<List<PullRequest>>
+    val pullRequestsList: LiveData<List<PullRequest>>
+        get() {
+            getPullRequestsList()
+            return pullRequestDao.getPullRequestsByRepoAndOwner(repo, owner)
+        }
 
     init {
 
@@ -44,6 +47,14 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
                 Log.d(LOG_TAG, "Old weather deleted")
                 newReposFromInternet?.let { repoDao.bulkInsert(it) }
                 Log.d(LOG_TAG, "New values inserted")
+            })
+        })
+
+        val repoNetworkData = githubNetworkDataSource.currentPullRequests
+        repoNetworkData.observeForever({ newPullRequestFromInternet ->
+            executors.diskIO().execute({
+                newPullRequestFromInternet?.let { pullRequestDao.bulkInsert(it) }
+                Log.d(LOG_TAG, "New pull request values inserted")
             })
         })
 
@@ -64,6 +75,7 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
                 startFetchReposService()
             }
         })
+
 
     }
 
@@ -104,10 +116,8 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
         startFetchReposService()
     }
 
-    fun getPullRequestsList(repo: String, owner: String): LiveData<List<PullRequest>> {
+    fun getPullRequestsList() {
         startFetchPullRequestService()
-        return pullRequestDao.getPullRequestsByRepoAndOwner(repo, owner)
-
     }
 
     private fun startFetchPullRequestService() {

@@ -8,6 +8,6 @@ class DetailViewModelFactory(private val repository: GithubRepository) : ViewMod
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-        return DetailViewModelFactory(repository) as T
+        return DetailActivityViewModel(repository) as T
     }
 }

@@ -6,14 +6,7 @@ import io.github.castrors.githubarchkotlin.data.GithubRepository
 import io.github.castrors.githubarchkotlin.data.database.PullRequest
 
 internal class DetailActivityViewModel(private val repository: GithubRepository) : ViewModel() {
-    val pullRequesList: LiveData<List<PullRequest>>
-
-    var owner: String = ""
-    var repo: String = ""
-
-    init {
-        pullRequesList = repository.getPullRequestsList(repo, owner)
-    }
+    val pullRequesList: LiveData<List<PullRequest>> = repository.pullRequestsList
 
 
 }

@@ -4,7 +4,6 @@ import android.arch.persistence.room.Embedded
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import java.util.*
 
 data class GithubBase(
         val total_count: Int,
@@ -31,15 +30,13 @@ data class Owner(
 data class PullRequest(
         @PrimaryKey(autoGenerate = true) val local_id: Int,
         val id: Int,
-        val html_url: String,
-        val title: String,
+        val html_url: String? = "",
+        val title: String? = "",
         @Embedded val user: User,
-        val body: String,
-        val created_at: Date,
-        val repo: String,
-        val owner: String)
+        val body: String? = "",
+        var repo: String? = "",
+        var owner: String? = "")
 
 data class User(
-        val id: Int,
-        val login: String,
-        val avatar_url: String)
+        var login: String? = "",
+        var avatar_url: String? = "")

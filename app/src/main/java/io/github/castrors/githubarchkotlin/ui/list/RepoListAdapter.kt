@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.repo_list_item.view.*
 
 class RepoListAdapter(newRepoList: List<Repo>,
                       private val context: Context,
-                      private val itemListener: RepoListAdapterOnItemClickHandler) : RecyclerView.Adapter<RepoListAdapter.ViewHolder>() {
+                      private val itemClick: (Repo) -> Unit) : RecyclerView.Adapter<RepoListAdapter.ViewHolder>() {
 
     private val repository = InjectorUtils.provideRepository(context)
 
@@ -24,13 +24,9 @@ class RepoListAdapter(newRepoList: List<Repo>,
             notifyDataSetChanged()
         }
 
-    interface RepoListAdapterOnItemClickHandler {
-        fun onItemClick(repo: Repo)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val expense = repoList[position]
-        holder?.bindView(expense)
+        holder.bindView(expense)
         if (reachedLastPosition(position)) {
             repository.requestMore()
         }
@@ -40,28 +36,23 @@ class RepoListAdapter(newRepoList: List<Repo>,
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.repo_list_item, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, itemClick)
     }
 
     override fun getItemCount(): Int {
         return repoList.size
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
+    class ViewHolder(itemView: View, private val itemClick: (Repo) -> Unit) : RecyclerView.ViewHolder(itemView) {
         fun bindView(repo: Repo) {
-            val name = itemView.name
-            val description = itemView.fullDescription
-            val forksCount = itemView.forkCount
-            val starCount = itemView.starCount
-            val image = itemView.image
-
-            name.text = repo.full_name
-            description.text = repo.description
-            forksCount.text = repo.forks_count.toString()
-            starCount.text = repo.stargazers_count.toString()
-
-            Picasso.with(itemView.context).load(repo.owner.avatar_url).into(image)
+            with(repo) {
+                Picasso.with(itemView.context).load(owner.avatar_url).into(itemView.image)
+                itemView.name.text = full_name
+                itemView.fullDescription.text = description
+                itemView.forkCount.text = forks_count.toString()
+                itemView.starCount.text = stargazers_count.toString()
+                itemView.setOnClickListener { itemClick(this) }
+            }
         }
     }
 }

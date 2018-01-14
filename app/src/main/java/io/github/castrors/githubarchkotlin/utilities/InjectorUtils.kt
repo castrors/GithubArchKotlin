@@ -23,7 +23,7 @@ object InjectorUtils {
         return GithubRepoNetworkDataSource.getInstance(context.applicationContext, executors)
     }
 
-    fun provideDetailViewModelFactory(context: Context): DetailViewModelFactory {
+    fun provideDetailActivityViewModelFactory(context: Context): DetailViewModelFactory {
         val repository = provideRepository(context.applicationContext)
         return DetailViewModelFactory(repository)
     }

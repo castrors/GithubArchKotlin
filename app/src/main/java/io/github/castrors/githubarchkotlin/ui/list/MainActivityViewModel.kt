@@ -6,11 +6,5 @@ import io.github.castrors.githubarchkotlin.data.GithubRepository
 import io.github.castrors.githubarchkotlin.data.database.Repo
 
 internal class MainActivityViewModel(private val repository: GithubRepository) : ViewModel() {
-    val repoList: LiveData<List<Repo>>
-
-    init {
-        repoList = repository.githubRepositoriesList
-    }
-
-
+    val repoList: LiveData<List<Repo>> = repository.githubRepositoriesList
 }

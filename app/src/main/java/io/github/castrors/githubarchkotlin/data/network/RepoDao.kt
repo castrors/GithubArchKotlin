@@ -11,9 +11,6 @@ import io.github.castrors.githubarchkotlin.data.database.Repo
 interface RepoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(repo: Repo)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun bulkInsert(repoList: List<Repo>)
 
     @Query("SELECT * FROM repo")

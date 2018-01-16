@@ -18,9 +18,6 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
     public var userReachedEndOfList = false
     public var currentPage = 1
 
-    lateinit var owner: String
-    lateinit var repo: String
-
     private val isFetchNeeded: Boolean
         get() {
             val count = repoDao.countAllRepo()
@@ -33,11 +30,11 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
             return repoDao.getRepos()
         }
 
-    val pullRequestsList: LiveData<List<PullRequest>>
-        get() {
-            getPullRequestsList()
-            return pullRequestDao.getPullRequestsByRepoAndOwner(repo, owner)
-        }
+
+    fun providePullRequestsList(owner: String, repo: String): LiveData<List<PullRequest>>{
+        getPullRequestsList(owner, repo)
+        return pullRequestDao.getPullRequestsByOwnerAndRepo(owner, repo)
+    }
 
     init {
 
@@ -69,24 +66,15 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
         initialized = true
 
         executors.diskIO().execute({
-            githubNetworkDataSource.scheduleRecurringFetchGithubRepositoriesSync()
-
             if (isFetchNeeded) {
                 startFetchReposService()
             }
         })
-
-
     }
 
     private fun startFetchReposService() {
         githubNetworkDataSource.startFetchGithubRepositoriesService()
     }
-
-//    fun getWeatherByDate(date: Date): LiveData<WeatherEntry> {
-//        initializeData()
-//        return repoDao.getWeatherByDate(date)
-//    }
 
     companion object {
         private val LOG_TAG = GithubRepository::class.java.simpleName
@@ -116,12 +104,12 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
         startFetchReposService()
     }
 
-    fun getPullRequestsList() {
-        startFetchPullRequestService()
+    fun getPullRequestsList(owner: String, repo: String) {
+        startFetchPullRequestService(owner, repo)
     }
 
-    private fun startFetchPullRequestService() {
-        githubNetworkDataSource.startFetchPullRequestService()
+    private fun startFetchPullRequestService(owner: String, repo: String) {
+        githubNetworkDataSource.startFetchPullRequestService(owner, repo)
     }
 
 }

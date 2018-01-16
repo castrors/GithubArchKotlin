@@ -20,23 +20,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.detail.DetailActivity"
+            android:parentActivityName=".ui.list.MainActivity"/>
+
         <service
-            android:name=".data.network.GithubSyncIntentService"
+            android:name=".data.network.RepoIntentService"
             android:exported="false" />
         <service
             android:name=".data.network.PullRequestIntentService"
             android:exported="false" />
-        <service
-            android:name=".data.network.GithubFirebaseJobService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
-            </intent-filter>
-        </service>
-
-        <activity android:name=".ui.detail.DetailActivity"
-            android:parentActivityName=".ui.list.MainActivity">
-        </activity>
     </application>
 
 </manifest>

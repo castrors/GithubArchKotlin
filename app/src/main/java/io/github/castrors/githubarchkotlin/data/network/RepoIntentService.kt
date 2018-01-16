@@ -6,7 +6,7 @@ import android.util.Log
 import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
 
 
-class GithubSyncIntentService : IntentService("GithubSyncIntentService") {
+class RepoIntentService : IntentService("RepoIntentService") {
 
     override fun onHandleIntent(intent: Intent?) {
         Log.d(LOG_TAG, "Intent service started")
@@ -15,6 +15,6 @@ class GithubSyncIntentService : IntentService("GithubSyncIntentService") {
     }
 
     companion object {
-        private val LOG_TAG = GithubSyncIntentService::class.java.simpleName
+        private val LOG_TAG = RepoIntentService::class.java.simpleName
     }
 }

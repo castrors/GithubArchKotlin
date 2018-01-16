@@ -19,8 +19,8 @@ interface PullRequestDao {
     @Query("SELECT * FROM pullrequest")
     fun getPullRequests(): LiveData<List<PullRequest>>
 
-    @Query("SELECT * FROM pullrequest WHERE repo = :repo AND owner = :owner")
-    fun getPullRequestsByRepoAndOwner(repo: String, owner: String): LiveData<List<PullRequest>>
+    @Query("SELECT * FROM pullrequest WHERE owner = :owner AND repo = :repo")
+    fun getPullRequestsByOwnerAndRepo(owner: String, repo: String): LiveData<List<PullRequest>>
 
     @Query("SELECT COUNT(id) FROM pullrequest")
     fun countAllPullRequest(): Int

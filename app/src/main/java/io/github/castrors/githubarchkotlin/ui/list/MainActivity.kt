@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import io.github.castrors.githubarchkotlin.R
 import io.github.castrors.githubarchkotlin.data.database.Repo
 import io.github.castrors.githubarchkotlin.ui.detail.DetailActivity
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        setupToolbar()
 
         val factory = InjectorUtils.provideMainActivityViewModelFactory(this.applicationContext)
         val viewModel = ViewModelProviders.of(this, factory).get(MainActivityViewModel::class.java)
@@ -33,6 +36,12 @@ class MainActivity : AppCompatActivity() {
                 listAdapter.repoList = it
             }
         })
+    }
+
+    private fun setupToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.title = getString(R.string.app_name)
+        setSupportActionBar(toolbar)
     }
 }
 

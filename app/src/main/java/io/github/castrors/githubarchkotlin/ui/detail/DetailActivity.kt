@@ -2,10 +2,13 @@ package io.github.castrors.githubarchkotlin.ui.detail
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.net.Uri
 import android.os.Bundle
+import android.support.customtabs.CustomTabsIntent
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.widget.Toast
+import android.support.v7.widget.Toolbar
 import io.github.castrors.githubarchkotlin.R
 import io.github.castrors.githubarchkotlin.data.database.PullRequest
 import io.github.castrors.githubarchkotlin.ui.list.DetailActivityViewModel
@@ -13,18 +16,20 @@ import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
 import io.github.castrors.githubarchkotlin.utilities.owner
 import io.github.castrors.githubarchkotlin.utilities.repo
 
+
 class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        require(!intent.extras.isEmpty){"You must send the owner and the repo informations"}
+        require(!intent.extras.isEmpty) { "You must send the owner and the repo informations" }
+        setupToolbar()
         val factory = InjectorUtils.provideDetailActivityViewModelFactory(this.applicationContext, intent.owner(), intent.repo())
         val viewModel = ViewModelProviders.of(this, factory).get(DetailActivityViewModel::class.java)
 
         val listAdapter = PullRequestsAdapter(ArrayList(0), this, { pullRequest ->
-            Toast.makeText(applicationContext, "item clicked ${pullRequest.title}", Toast.LENGTH_SHORT).show()
+            openPullRequestUrl(pullRequest)
         })
 
         val recyclerView = findViewById<RecyclerView>(R.id.pullRequestList)
@@ -35,5 +40,20 @@ class DetailActivity : AppCompatActivity() {
                 listAdapter.pullRequestList = it
             }
         })
+    }
+
+    private fun setupToolbar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.title = intent.repo()
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun openPullRequestUrl(pullRequest: PullRequest) {
+        val colorInt = ContextCompat.getColor(this, R.color.colorPrimary)
+        val builder = CustomTabsIntent.Builder()
+        builder.setToolbarColor(colorInt)
+        val customTabsIntent = builder.build()
+        customTabsIntent.launchUrl(this, Uri.parse(pullRequest.html_url))
     }
 }

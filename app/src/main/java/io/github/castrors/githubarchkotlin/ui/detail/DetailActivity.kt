@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -25,12 +26,17 @@ class DetailActivity : AppCompatActivity() {
 
         require(!intent.extras.isEmpty) { "You must send the owner and the repo informations" }
         setupToolbar()
+        val repository = InjectorUtils.provideRepository(this)
         val factory = InjectorUtils.provideDetailActivityViewModelFactory(this.applicationContext, intent.owner(), intent.repo())
         val viewModel = ViewModelProviders.of(this, factory).get(DetailActivityViewModel::class.java)
 
         val listAdapter = PullRequestsAdapter(ArrayList(0), this, { pullRequest ->
             openPullRequestUrl(pullRequest)
         })
+        val swipeToRefresh = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+        swipeToRefresh.setOnRefreshListener{
+            viewModel.forceUpdate()
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.pullRequestList)
         recyclerView.adapter = listAdapter
@@ -38,7 +44,12 @@ class DetailActivity : AppCompatActivity() {
         viewModel.pullRequesList.observe(this, Observer<List<PullRequest>> { pullRequestEntries ->
             pullRequestEntries?.let {
                 listAdapter.pullRequestList = it
+                repository.forceUpdate = false
             }
+        })
+
+        viewModel.isLoadingLiveData.observe(this, Observer<Boolean> {
+            it?.let { swipeToRefresh.isRefreshing = it }
         })
     }
 

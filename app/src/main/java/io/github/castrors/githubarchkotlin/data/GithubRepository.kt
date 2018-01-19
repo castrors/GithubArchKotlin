@@ -13,15 +13,15 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
                                            private val pullRequestDao: PullRequestDao,
                                            private val githubNetworkDataSource: GithubRepoNetworkDataSource,
                                            private val executors: AppExecutors) {
-    private var initialized = false
 
     public var userReachedEndOfList = false
+    var forceUpdate = false
     public var currentPage = 1
 
     private val isFetchNeeded: Boolean
         get() {
             val count = repoDao.countAllRepo()
-            return count == 0 || userReachedEndOfList
+            return count == 0 || userReachedEndOfList || forceUpdate
         }
 
     val githubRepositoriesList: LiveData<List<Repo>>
@@ -31,7 +31,7 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
         }
 
 
-    fun providePullRequestsList(owner: String, repo: String): LiveData<List<PullRequest>>{
+    fun providePullRequestsList(owner: String, repo: String): LiveData<List<PullRequest>> {
         getPullRequestsList(owner, repo)
         return pullRequestDao.getPullRequestsByOwnerAndRepo(owner, repo)
     }
@@ -59,12 +59,6 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
 
     @Synchronized
     private fun initializeData() {
-
-        // Only perform initialization once per app lifetime. If initialization has already been
-        // performed, we have nothing to do in this method.
-        if (initialized) return
-        initialized = true
-
         executors.diskIO().execute({
             if (isFetchNeeded) {
                 startFetchReposService()
@@ -110,6 +104,16 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
 
     private fun startFetchPullRequestService(owner: String, repo: String) {
         githubNetworkDataSource.startFetchPullRequestService(owner, repo)
+    }
+
+    fun forceUpdateGithubRepos() {
+        forceUpdate = true
+        initializeData()
+    }
+
+    fun forceUpdatePullRequest(owner: String, repo: String) {
+        forceUpdate = true
+        startFetchPullRequestService(owner, repo)
     }
 
 }

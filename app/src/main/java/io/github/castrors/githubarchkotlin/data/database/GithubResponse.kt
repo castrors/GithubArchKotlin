@@ -13,8 +13,7 @@ data class GithubBase(
 
 @Entity(tableName = "repo")
 data class Repo(
-        @PrimaryKey(autoGenerate = true) val local_id: Int,
-        val id: Int,
+        @PrimaryKey val id: Int,
         val name: String,
         val full_name: String,
         @Embedded val owner: Owner,
@@ -28,8 +27,7 @@ data class Owner(
 
 @Entity(tableName = "pullrequest")
 data class PullRequest(
-        @PrimaryKey(autoGenerate = true) val local_id: Int,
-        val id: Int,
+        @PrimaryKey val id: Int,
         val html_url: String? = "",
         val title: String? = "",
         @Embedded val user: User,

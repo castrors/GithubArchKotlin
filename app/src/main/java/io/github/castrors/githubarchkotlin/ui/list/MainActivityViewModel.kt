@@ -14,6 +14,6 @@ internal class MainActivityViewModel(private val repository: GithubRepository) :
     }
 
     fun forceUpdate() {
-        repository.githubRepositoriesList
+        repository.forceUpdateGithubRepos()
     }
 }

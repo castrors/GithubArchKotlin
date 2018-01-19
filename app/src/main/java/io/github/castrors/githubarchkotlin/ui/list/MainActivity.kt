@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity(){
 
         factory = InjectorUtils.provideMainActivityViewModelFactory(this.applicationContext)
         viewModel = ViewModelProviders.of(this, factory).get(MainActivityViewModel::class.java)
+        val repository = InjectorUtils.provideRepository(this)
 
         val listAdapter = RepoListAdapter(ArrayList(0), this, { repo ->
             startActivity(Intent(this, DetailActivity::class.java)
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(){
         viewModel.repoList.observe(this, Observer<List<Repo>> { repoEntries ->
             repoEntries?.let {
                 listAdapter.repoList = it
+                repository.forceUpdate = false
             }
         })
         viewModel.isLoadingLiveData.observe(this, Observer<Boolean> {

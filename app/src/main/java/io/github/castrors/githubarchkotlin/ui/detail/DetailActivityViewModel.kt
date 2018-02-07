@@ -16,6 +16,6 @@ internal class DetailActivityViewModel(private val repository: GithubRepository,
     }
 
     fun forceUpdate() {
-        repository.forceUpdatePullRequest(owner, repo)
+        repository.providePullRequestsList(owner, repo)
     }
 }

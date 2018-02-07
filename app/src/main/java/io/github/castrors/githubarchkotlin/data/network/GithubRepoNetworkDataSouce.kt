@@ -3,13 +3,11 @@ package io.github.castrors.githubarchkotlin.data.network
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import io.github.castrors.githubarchkotlin.AppExecutors
 import io.github.castrors.githubarchkotlin.data.database.PullRequest
 import io.github.castrors.githubarchkotlin.data.database.Repo
 import io.github.castrors.githubarchkotlin.utilities.InjectorUtils
-import io.github.castrors.githubarchkotlin.utilities.putBundle
 import java.util.concurrent.TimeUnit
 
 class GithubRepoNetworkDataSource constructor(private val mContext: Context, private val mExecutors: AppExecutors) {
@@ -29,22 +27,6 @@ class GithubRepoNetworkDataSource constructor(private val mContext: Context, pri
         downloadedPullRequests = MutableLiveData<List<PullRequest>>()
     }
 
-
-    /**
-     * Starts an intent service to fetch the weather.
-     */
-    fun startFetchGithubRepositoriesService() {
-        val intentToFetch = Intent(mContext, RepoIntentService::class.java)
-        mContext.startService(intentToFetch)
-        Log.d(LOG_TAG, "Service created")
-    }
-
-    fun startFetchPullRequestService(owner: String, repo: String) {
-        val intentToFetch = Intent(mContext, PullRequestIntentService::class.java)
-                .putBundle(owner, repo)
-        mContext.startService(intentToFetch)
-        Log.d(LOG_TAG, "Service created")
-    }
 
     internal fun fetchRepos() {
 

@@ -32,7 +32,7 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
 
 
     fun providePullRequestsList(owner: String, repo: String): LiveData<List<PullRequest>> {
-        getPullRequestsList(owner, repo)
+        githubNetworkDataSource.fetchPullRequests(owner, repo)
         return pullRequestDao.getPullRequestsByOwnerAndRepo(owner, repo)
     }
 
@@ -67,7 +67,7 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
     }
 
     private fun startFetchReposService() {
-        githubNetworkDataSource.startFetchGithubRepositoriesService()
+        githubNetworkDataSource.fetchRepos()
     }
 
     companion object {
@@ -98,22 +98,11 @@ class GithubRepository private constructor(private val repoDao: RepoDao,
         startFetchReposService()
     }
 
-    fun getPullRequestsList(owner: String, repo: String) {
-        startFetchPullRequestService(owner, repo)
-    }
-
-    private fun startFetchPullRequestService(owner: String, repo: String) {
-        githubNetworkDataSource.startFetchPullRequestService(owner, repo)
-    }
 
     fun forceUpdateGithubRepos() {
         forceUpdate = true
         initializeData()
     }
 
-    fun forceUpdatePullRequest(owner: String, repo: String) {
-        forceUpdate = true
-        startFetchPullRequestService(owner, repo)
-    }
 
 }

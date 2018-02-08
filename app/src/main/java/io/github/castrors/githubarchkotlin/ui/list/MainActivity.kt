@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(){
         val recyclerView = findViewById<RecyclerView>(R.id.repoList)
         recyclerView.adapter = listAdapter
 
-        viewModel.repoList.observe(this, Observer<List<Repo>> { repoEntries ->
+        viewModel.getRepoList().observe(this, Observer<List<Repo>> { repoEntries ->
             repoEntries?.let {
                 listAdapter.repoList = it
                 repository.forceUpdate = false
